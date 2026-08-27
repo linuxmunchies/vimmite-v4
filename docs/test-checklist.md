@@ -1,4 +1,4 @@
-# Vimmite3 physical test checklist
+# Vimmite V4 physical test checklist
 
 Record the image digest, machine, firmware version, Secure Boot state, and test
 date for every run. Do not promote a build until the blocking checks pass.

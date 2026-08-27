@@ -1,11 +1,11 @@
-# Vimmite3
+# Vimmite V4
 
 [![BlueBuild](https://github.com/linuxmunchies/vimmite-v4/actions/workflows/build.yml/badge.svg)](https://github.com/linuxmunchies/vimmite-v4/actions/workflows/build.yml)
 
 > Vim's personal Fedora Atomic desktop: KDE, gaming, development, media, and
 > workstation tools in one reproducible AMD/Intel image.
 
-Vimmite3 is **my OS**. It is the third generation of the image I use on my own
+Vimmite V4 is **my OS**. It is the fourth generation of the image I use on my own
 machines, rebuilt around Fedora Kinoite and BlueBuild so the configuration is
 reviewable, repeatable, signed, and much easier to maintain than a pile of
 post-install scripts.
@@ -27,10 +27,10 @@ and suspend/resume still need to be checked on each machine where those
 features matter.
 
 The published image is
-`ghcr.io/linuxmunchies/vimmite3-kinoite:latest`: the portable AMD/Intel Fedora
-Kinoite image used by Vimmite3 systems.
+[`ghcr.io/linuxmunchies/vimmite-v4-kinoite:latest`](https://github.com/linuxmunchies/vimmite-v4/pkgs/container/vimmite-v4-kinoite):
+the portable AMD/Intel Fedora Kinoite image used by Vimmite V4 systems.
 
-## What is in Vimmite3?
+## What is in Vimmite V4?
 
 ### Desktop and base system
 
@@ -46,7 +46,7 @@ Kinoite image used by Vimmite3 systems.
 
 - Native Steam and `steam-devices`
 - 64-bit and 32-bit MangoHud
-- GameMode when pulled as Steam's normal weak dependency; Vimmite3 adds no
+- GameMode when pulled as Steam's normal weak dependency; Vimmite V4 adds no
   GameMode launch options or global performance tuning
 - ProtonPlus and Bottles
 - Mesa's 32-bit Vulkan drivers for Proton
@@ -109,13 +109,17 @@ You need:
 BlueBuild is already installed inside BlueBuild-built systems. On another
 system, follow the [official CLI installation documentation](https://blue-build.org/how-to/local/).
 
+BlueBuild publishes an OCI image, not a downloadable ISO. A successful `main`
+build creates the package above; generate the installer locally from that
+package with the following command.
+
 ### Recommended: generate from the published image
 
 Clone the repository so the signing key and documentation are available:
 
 ```bash
 git clone https://github.com/linuxmunchies/vimmite-v4.git
-cd Vimmite3
+cd vimmite-v4
 mkdir -p iso
 ```
 
@@ -124,8 +128,8 @@ Generate a Kinoite installer from the latest published primary image:
 ```bash
 sudo bluebuild generate-iso \
   --output-dir ./iso \
-  --iso-name Vimmite3.iso \
-  image ghcr.io/linuxmunchies/vimmite3-kinoite:latest
+  --iso-name Vimmite-V4.iso \
+  image ghcr.io/linuxmunchies/vimmite-v4-kinoite:latest
 ```
 
 Generating from the published image avoids rebuilding the OS locally and is
@@ -138,7 +142,7 @@ To build the image from this checkout before creating the installer:
 ```bash
 sudo bluebuild generate-iso \
   --output-dir ./iso \
-  --iso-name Vimmite3-local.iso \
+  --iso-name Vimmite-V4-local.iso \
   recipe recipes/vimmora.yml
 ```
 
@@ -152,7 +156,7 @@ ISO to the USB drive. Double-check the selected device: writing an image erases
 the target drive.
 
 Boot the USB in UEFI mode, complete the Kinoite installer, configure disk
-encryption and the initial user, then reboot into Vimmite3. Keep the encryption
+encryption and the initial user, then reboot into Vimmite V4. Keep the encryption
 passphrase available for every cold boot.
 
 ## Rebase an existing Fedora Atomic installation
@@ -161,19 +165,19 @@ This is only for an existing Atomic Fedora desktop such as Kinoite or
 Silverblue. Do not run these commands on traditional mutable Fedora.
 
 The first rebase uses the unverified transport once so the image can install
-Vimmite3's signing policy and public key:
+Vimmite V4's signing policy and public key:
 
 ```bash
 sudo rpm-ostree rebase \
-  ostree-unverified-registry:ghcr.io/linuxmunchies/vimmite3-kinoite:latest
+  ostree-unverified-registry:ghcr.io/linuxmunchies/vimmite-v4-kinoite:latest
 sudo systemctl reboot
 ```
 
-After booting Vimmite3, move permanently to the signed transport:
+After booting Vimmite V4, move permanently to the signed transport:
 
 ```bash
 sudo rpm-ostree rebase \
-  ostree-image-signed:docker://ghcr.io/linuxmunchies/vimmite3-kinoite:latest
+  ostree-image-signed:docker://ghcr.io/linuxmunchies/vimmite-v4-kinoite:latest
 sudo systemctl reboot
 ```
 
@@ -193,7 +197,7 @@ New users start in Zsh with the image-baked Zim module tree and receive
 `~/sync`, `~/dev`, and `~/ai` automatically. Homebrew is installed at runtime by
 BlueBuild's `brew-setup` service and becomes available in interactive shells.
 
-Browse every Vimmite3 helper interactively:
+Browse every Vimmite V4 helper interactively:
 
 ```bash
 ujust --choose
@@ -287,7 +291,7 @@ less docs/test-checklist.md
 
 ## CI, publication, and signing
 
-[`.github/workflows/build.yml`](.github/workflows/build.yml) builds Vimmite3
+[`.github/workflows/build.yml`](.github/workflows/build.yml) builds Vimmite V4
 on every non-documentation push, every pull request, manual dispatch, and the
 daily schedule. Successful `main` builds publish to GHCR.
 
@@ -300,7 +304,7 @@ Verify the published primary image:
 ```bash
 cosign verify \
   --key cosign.pub \
-  ghcr.io/linuxmunchies/vimmite3-kinoite:latest
+  ghcr.io/linuxmunchies/vimmite-v4-kinoite:latest
 ```
 
 Useful workflow commands for maintainers:
@@ -319,7 +323,7 @@ recipes/modules/                 Hardware, packages, gaming, virtualization,
                                  configuration, and Flatpak modules
 files/scripts/                   Pinned artifact and shell installers
 files/vimmora/                   Files copied into the primary image
-files/justfiles/vimmora.just     Vimmite3 ujust commands
+files/justfiles/vimmora.just     Vimmite V4 ujust commands
 docs/post-install.md             Optional profile instructions
 docs/test-checklist.md           Physical acceptance checklist
 docs/architecture-proposal.md    Design and dependency rationale
@@ -330,7 +334,7 @@ cosign.pub                       Public image-verification key
 
 ## Design rules
 
-Vimmite3 favors:
+Vimmite V4 favors:
 
 - declarative image composition over mutable post-install scripts;
 - standard Fedora/Universal Blue mechanisms over one-off workarounds;
@@ -339,7 +343,7 @@ Vimmite3 favors:
 - signed publication and rollback-safe upgrades; and
 - preserving Vim's workflow without pretending every machine is identical.
 
-That is the point of Vimmite3: **my desktop, my defaults, reproducibly built.**
+That is the point of Vimmite V4: **my desktop, my defaults, reproducibly built.**
 
 ## Documentation
 
