@@ -13,13 +13,17 @@ ujust setup-zsh
 ujust setup-virtualization
 ```
 
-`setup-zsh` preserves existing `.zshrc` and `.zimrc` files. To also select Zsh
-as the login shell, run `ujust setup-zsh true`; every retained deployment must
-continue to include `/usr/bin/zsh` for rollback-safe login.
+New accounts receive Zsh and the image-baked Zim module tree automatically.
+`setup-zsh` is for upgraded accounts and preserves existing `.zshrc` and
+`.zimrc` files. To also select Zsh as the login shell, run `ujust setup-zsh
+true`; every retained deployment must continue to include `/usr/bin/zsh` for
+rollback-safe login.
 
-`setup-virtualization` enables libvirt's modular sockets, enables the default
-NAT network, and adds the current user to `libvirt`. Log out and back in before
-opening virt-manager.
+`setup-virtualization` enables libvirt's modular sockets and default NAT
+network. Administrators in `wheel` are authorized by the image's
+polkit rule, so a separate group change and logout are not required. The command
+also grants the `qemu` service account traversal-only access to your private
+home directory so ISO images selected from `~/Downloads` can be opened.
 
 ## Lossless Scaling
 
@@ -33,20 +37,6 @@ DLL is installed, bypass that profile when checking the baseline Vulkan stack:
 ```bash
 DISABLE_LSFG=1 vkcube
 ```
-
-## HP DisplayLink dock
-
-```bash
-ujust displaylink status
-ujust displaylink enable
-```
-
-Enabling DisplayLink takes effect on the next boot. Reboot with the dock
-attached, then verify all three displays before testing disconnect/reconnect or
-suspend. `ujust displaylink disable` reverses the boot-time service choice.
-
-The EVDI module is currently unsigned. Secure Boot must remain disabled for this
-development image.
 
 ## Labeled internal drive automount
 

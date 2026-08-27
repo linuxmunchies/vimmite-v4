@@ -31,8 +31,6 @@ observations separately from decisions and keeps unresolved design work visible.
 - Wake-on-LAN and SSH are post-install options, not globally enabled defaults.
 - Preserve automatic removable/game-drive mounting where practical. Any fixed
   second-drive layout belongs in the Ryzen AI MAX host's post-install profile.
-- The HP DisplayLink/Thunderbolt dock and its three-monitor use case must remain
-  supported and be included in physical test coverage.
 - Retain Fira Code and JetBrains Mono Nerd Fonts.
 - Use Btrfs and preserve atomic deployment rollback from the bootloader. Treat
   personal-data snapshots and backups as a separate design question; Snapper is
@@ -53,8 +51,8 @@ observations separately from decisions and keeps unresolved design work visible.
   `fedora-multimedia` repository supplies Steam, avoiding an additional Steam
   repository in this project.
 - The corrected PipeWire-Pulse rule matches Vesktop's observed process
-  properties, and a user path unit restores the HyperX microphone to 90% when
-  relevant state changes.
+  properties. The HyperX microphone path unit restores 90% when explicitly
+  enabled through `ujust hyperx-mic enable`; it is inactive by default.
 - The workflow builds and publishes the Kinoite-based Vimmite3 recipe.
 
 ## Current host observations
@@ -124,8 +122,6 @@ Observations:
 
 - `iommu=off` prevents the AMD XDNA driver from initializing and coincides with
   MediaTek Wi-Fi DMA initialization errors on this host.
-- The third DisplayLink-attached monitor became less reliable after IOMMU was
-  disabled.
 - `amdgpu.gttsize` emits a deprecation warning on the current kernel.
 - `ttm.pages_limit=30720000` sets a 120 GiB page limit and is an unusually
   large, AI-workload-specific setting.
@@ -149,9 +145,6 @@ Live comparison on the existing Vimmite2 AI MAX host:
 - After changing the existing host to `iommu=on`, the next boot created 40 IOMMU
   groups, initialized `amdxdna`, exposed `/dev/accel/accel0`, and initialized the
   MT7925 Wi-Fi device without those DMA errors.
-- DisplayLink is active and Plasma currently reports all three displays connected
-  and enabled. This is strong evidence for keeping IOMMU enabled, but it does not
-  replace repeated dock and suspend/resume testing on Vimmite3.
 
 ## Flatpak notification finding
 
@@ -163,45 +156,21 @@ Vimmite3 retains the user Flathub remote for optional applications but explicitl
 sets `notify: false` for that empty user scope. System Flatpak reconciliation and
 its useful notifications remain enabled.
 
-## DisplayLink findings
-
-- The working host contains the proprietary `displaylink` 6.3 userspace daemon,
-  `libevdi` 1.15, and an `evdi` module built for the exact OGC kernel. The module
-  is signed by the Universal Blue kernel key.
-- DisplayLink is therefore an explicit kernel/userspace compatibility
-  requirement, not merely a desktop package or a generic Thunderbolt feature.
-- Current Universal Blue builds publish `evdi` only in the OGC `extra` stream;
-  the standard `main` kernel has no matching extra-kmods artifact. BlueBuild's
-  `akmods` module therefore failed when asked for `evdi` on `main`.
-- Negativo17 publishes an `akmod-evdi` source package for Fedora 44. An isolated
-  build proved it can compile and install a kernel-matched EVDI RPM against the
-  exact standard kernel, after which the 360+ MiB build toolchain can be removed.
-- The development recipe now performs that build and fails if `modinfo` or the
-  resulting package check fails. DisplayLink remains disabled until the dock
-  profile is explicitly enabled.
-- The locally compiled module is currently unsigned. This host has Secure Boot
-  disabled, but support for Secure Boot on other targets now requires a separate
-  signing and key-enrollment design before the image is promoted.
-
 ## Reported reliability problems to reproduce
 
 - On two devices, the installer completed and then the display became entirely
   grey until the first reboot. It did not recur after reboot.
 - Suspend occasionally struggles or fails to resume reliably.
-- The third monitor on the DisplayLink dock is unreliable with IOMMU disabled.
 
 These are test cases, not yet assigned causes. Installer graphics, first-boot
-state, kernel/display drivers, dock support, and suspend logs all remain in the
+state, kernel/display drivers, and suspend logs all remain in the
 investigation scope.
 
 ## Open architecture work
 
-- Test the standard-kernel EVDI build across routine kernel updates and test the
-  three-monitor dock physically. Design module signing before enabling Secure
-  Boot on a target.
 - Complete the physical checklist on AMD iGPU, Intel/Arc, and Ryzen AI MAX
   hardware, including first reboot, suspend/resume, gaming, controller,
-  virtualization, and dock-display acceptance tests.
+  and virtualization acceptance tests.
 - Test the Ryzen AI MAX profile with a real AI workload before deciding whether
   the deprecated GTT argument should survive.
 - Decide on a personal-data backup policy separately from atomic deployment

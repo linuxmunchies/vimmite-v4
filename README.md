@@ -1,6 +1,6 @@
 # Vimmite3
 
-[![BlueBuild](https://github.com/linuxmunchies/Vimmite3/actions/workflows/build.yml/badge.svg)](https://github.com/linuxmunchies/Vimmite3/actions/workflows/build.yml)
+[![BlueBuild](https://github.com/linuxmunchies/vimmite-v4/actions/workflows/build.yml/badge.svg)](https://github.com/linuxmunchies/vimmite-v4/actions/workflows/build.yml)
 
 > Vim's personal Fedora Atomic desktop: KDE, gaming, development, media, and
 > workstation tools in one reproducible AMD/Intel image.
@@ -19,12 +19,12 @@ is either disabled by default or exposed as an explicit `ujust` profile.
 The primary Kinoite image has completed a real fresh-install acceptance pass on
 a Lenovo ThinkPad T16 Gen 1 with AMD graphics. Boot, encryption, networking,
 audio, camera, Plasma, Flatpaks, Steam, Vulkan, MangoHud, Distrobox, libvirt,
-DisplayLink's EVDI module, and atomic updates have all been exercised.
+and atomic updates have all been exercised.
 
 This remains a personal distribution rather than a general-purpose support
-project. DisplayLink monitor layouts, controllers, the EPOMAKER keyboard,
-HyperX audio, real game workloads, and suspend/resume still need to be checked
-on each machine where those features matter.
+project. Controllers, the EPOMAKER keyboard, HyperX audio, real game workloads,
+and suspend/resume still need to be checked on each machine where those
+features matter.
 
 The published image is
 `ghcr.io/linuxmunchies/vimmite3-kinoite:latest`: the portable AMD/Intel Fedora
@@ -64,14 +64,18 @@ applications later without expanding the base image.
 - Zed from Flathub
 - QEMU/KVM, modular libvirt daemons, UEFI firmware, software TPM support, and
   the virt-manager Flatpak
+- Homebrew/Linuxbrew through BlueBuild's native Brew module
+- LACT and input-remapper with their host services enabled
+- IVPN UI, daemon, and Fedora 42+ legacy iptables backend
 - Opt-in labeled-drive automounting for workstation/game drives
 
 ### Media and applications
 
 - VLC, mpv, yt-dlp, MediaInfo, Mixxx, and FLAC tools
 - OBS Studio, Kdenlive, Blender, GIMP, Krita, Gwenview, and SongRec
-- OnlyOffice, Obsidian, Signal, Telegram, Vesktop, Feishin, RustDesk,
-  SyncThingy, Flatseal, Resources, Coppwr, Gear Lever, and Bazaar
+- Bitwarden, Warehouse, LocalSend, OnlyOffice, Obsidian, Signal, Telegram,
+  Vesktop, Feishin, RustDesk, SyncThingy, Flatseal, Resources, Coppwr, Gear
+  Lever, and Bazaar
 
 The required application set is installed system-wide from Flathub. A quiet
 user-scoped Flathub remote is also created for optional apps.
@@ -81,14 +85,14 @@ user-scoped Flathub remote is also created for optional apps.
 The common image is portable. It does not guess which computer it is running
 on or enable special hardware services everywhere.
 
-- **DisplayLink:** userspace and an exact-kernel EVDI module are installed, but
-  `displaylink.service` is disabled until explicitly enabled.
 - **Ryzen AI MAX:** the legacy large-memory/IOMMU profile only applies after a
   strict CPU and DMI identity check.
 - **Internal data drives:** labeled-drive automounting is opt-in.
 - **Remote access:** SSH and Wake-on-LAN are opt-in.
 - **Streaming:** Moonlight and Sunshine are optional per-user installs.
 - **EPOMAKER EA75:** `hid_apple fnmode=2` is built into the image and initramfs.
+- **HyperX Cloud Alpha Wireless:** microphone-volume handling is opt-in through
+  `ujust hyperx-mic enable`.
 
 ## Install from an ISO
 
@@ -110,7 +114,7 @@ system, follow the [official CLI installation documentation](https://blue-build.
 Clone the repository so the signing key and documentation are available:
 
 ```bash
-git clone https://github.com/linuxmunchies/Vimmite3.git
+git clone https://github.com/linuxmunchies/vimmite-v4.git
 cd Vimmite3
 mkdir -p iso
 ```
@@ -139,8 +143,7 @@ sudo bluebuild generate-iso \
 ```
 
 This path takes longer and needs substantially more temporary storage because
-it composes the entire image locally first, including the kernel-matched EVDI
-module and initramfs.
+it composes the entire image locally first and rebuilds the initramfs.
 
 ### Write and boot the installer
 
@@ -182,9 +185,13 @@ rpm-ostree status
 
 ## First boot
 
-Required system Flatpaks reconcile automatically. A slow or temporarily broken
-network is retried with a bounded policy, and a final update pass repairs any
-runtime dependency that a large Flatpak transaction briefly considered unused.
+Required system Flatpaks reconcile automatically. Failed network-dependent
+reconciliation retries every two minutes without exhausting a boot-time rate
+limit, so connecting Wi-Fi is sufficient and no reboot is required.
+
+New users start in Zsh with the image-baked Zim module tree and receive
+`~/sync`, `~/dev`, and `~/ai` automatically. Homebrew is installed at runtime by
+BlueBuild's `brew-setup` service and becomes available in interactive shells.
 
 Browse every Vimmite3 helper interactively:
 
@@ -196,11 +203,9 @@ Common setup commands:
 
 | Goal | Command | Notes |
 | --- | --- | --- |
-| Install Zim safely | `ujust setup-zsh` | Preserves existing `.zshrc` and `.zimrc` |
-| Use Zsh as login shell | `ujust setup-zsh true` | Log out and back in afterward |
-| Prepare virtualization | `ujust setup-virtualization` | Enables NAT and adds the user to `libvirt` |
-| Check DisplayLink | `ujust displaylink status` | Does not enable the service |
-| Enable DisplayLink | `ujust displaylink enable` | Reboot with the dock attached |
+| Restore the image-baked Zim setup | `ujust setup-zsh` | Preserves existing `.zshrc` and `.zimrc` |
+| Use Zsh on an upgraded account | `ujust setup-zsh true` | Log out and back in afterward |
+| Prepare virtualization | `ujust setup-virtualization` | Enables the default NAT network |
 | Check drive automounting | `ujust automount status` | Safe on every machine |
 | Enable labeled drives | `ujust automount enable` | Intended for explicitly opted-in workstation hosts |
 | Install streaming | `ujust install-streaming moonlight` | Also accepts `sunshine` or `both` |
@@ -223,18 +228,6 @@ exists, bypass LSFG when testing the baseline Vulkan stack:
 ```bash
 DISABLE_LSFG=1 vkcube
 ```
-
-## DisplayLink and Secure Boot
-
-Universal Blue does not currently publish the EVDI `extra` kmod for the
-standard `main` kernel. Vimmite3 builds Negativo17's EVDI akmod against the
-exact kernel included in the image and removes the compiler toolchain
-afterward.
-
-The resulting EVDI module is kernel-matched but currently unsigned. Secure Boot
-must be disabled for EVDI/DisplayLink to load. DisplayLink remains disabled by
-default, so systems without the dock do not load the module or run the
-proprietary daemon.
 
 ## Updating and rolling back
 
@@ -280,10 +273,10 @@ bluebuild generate recipes/vimmora.yml --output Containerfile
 bluebuild build --no-sign recipes/vimmora.yml
 ```
 
-The local build uses the checkout's modules and scripts, compiles EVDI for the
-image kernel, verifies pinned downloads, rebuilds initramfs, and produces a
-local OCI image. Use `bluebuild build --help` to select a different build
-driver, platform, archive, or temporary directory.
+The local build uses the checkout's modules and scripts, verifies pinned
+downloads, pre-populates Zim, rebuilds initramfs, and produces a local OCI
+image. Use `bluebuild build --help` to select a different build driver,
+platform, archive, or temporary directory.
 
 Run the physical acceptance checklist before treating a successful container
 build as a release:
@@ -313,9 +306,9 @@ cosign verify \
 Useful workflow commands for maintainers:
 
 ```bash
-gh workflow run bluebuild --repo linuxmunchies/Vimmite3
-gh run list --repo linuxmunchies/Vimmite3 --workflow bluebuild --limit 10
-gh run watch --repo linuxmunchies/Vimmite3 <run-id> --exit-status
+gh workflow run bluebuild --repo linuxmunchies/vimmite-v4
+gh run list --repo linuxmunchies/vimmite-v4 --workflow bluebuild --limit 10
+gh run watch --repo linuxmunchies/vimmite-v4 <run-id> --exit-status
 ```
 
 ## Repository map
@@ -324,7 +317,7 @@ gh run watch --repo linuxmunchies/Vimmite3 <run-id> --exit-status
 recipes/vimmora.yml              Primary Kinoite recipe
 recipes/modules/                 Hardware, packages, gaming, virtualization,
                                  configuration, and Flatpak modules
-files/scripts/                   Pinned installers and EVDI build logic
+files/scripts/                   Pinned artifact and shell installers
 files/vimmora/                   Files copied into the primary image
 files/justfiles/vimmora.just     Vimmite3 ujust commands
 docs/post-install.md             Optional profile instructions
@@ -355,6 +348,7 @@ That is the point of Vimmite3: **my desktop, my defaults, reproducibly built.**
 - [Vimmora migration inventory](docs/vimmora-migration.md)
 - [Post-install profiles](docs/post-install.md)
 - [Physical acceptance checklist](docs/test-checklist.md)
+- [Session 1 implementation findings](docs/session-1-findings.md)
 - [BlueBuild documentation](https://blue-build.org/)
 
 ## License

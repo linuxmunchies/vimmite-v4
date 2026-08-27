@@ -123,19 +123,18 @@ These appear useful but need pruning against the base image and actual use.
 - Wake-on-LAN and SSH are opt-in post-install components.
 - Personal directories such as `~/dev`, `~/sync`, and the archived
   `~/ProtonDrive` hierarchy are user state, not image content.
-- DisplayLink support is driven by the HP dock use case. The image now carries
-  kernel-matched EVDI and DisplayLink userspace but keeps the service disabled
-  until the dock host explicitly opts in.
 
 ## Needs discussion or targeted verification
 
 - Whether the fixed PipeWire quantum configuration produces a real benefit for
   the user's workloads; it should not be described as universally optimal.
-- The microphone-volume block is confirmed as required. Live inspection showed
+- The microphone-volume block is confirmed as useful on the HyperX host. Live inspection showed
   Vesktop reporting `application.process.binary = "vesktop.bin"` and
   `application.name = "vesktop"`; the replacement rule matches both and a user
-  path unit restores the HyperX source to 90%. Treat this as provisionally
-  accepted and reopen it if real calls expose another volume change path.
+  path unit restores the HyperX source to 90%. It is now explicitly enabled per
+  user with `ujust hyperx-mic enable`, so unrelated systems carry no active
+  HyperX watcher. Treat this as provisionally accepted and reopen it if real
+  calls expose another volume change path.
 - Personal-data snapshots and backups remain undecided. The required bootloader
   OS rollback is already the atomic deployment model and should not be conflated
   with Btrfs data snapshots.

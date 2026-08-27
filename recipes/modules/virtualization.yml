@@ -26,11 +26,5 @@ modules:
         - virtnodedevd.socket
         - virtnwfilterd.socket
       disabled:
-        # The driver is present on every machine, but only dock hosts should
-        # load evdi and run the proprietary daemon.
-        - displaylink.service
         # Only the machine with labeled internal data/game drives opts in.
         - ublue-os-media-automount.service
-    user:
-      enabled:
-        - vimmora-hyperx-mic-volume.path

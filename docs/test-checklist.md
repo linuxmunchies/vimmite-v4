@@ -10,16 +10,19 @@ date for every run. Do not promote a build until the blocking checks pass.
 - [x] The image uses `ghcr.io/ublue-os/kinoite-main:44` and Fedora's standard
       kernel, not an OGC/Bazzite kernel.
 - [x] Firefox is present; Gamescope and NVIDIA-specific packages are absent.
-- [x] `kmod-evdi-$(kernel version)`, `displaylink`, and `libevdi` are present.
-- [x] EVDI's `vermagic` exactly matches the image kernel.
+- [ ] LACT, input-remapper, and their enabled services are present.
+- [ ] `brew` initializes successfully through BlueBuild's native module.
+- [ ] No EVDI or DisplayLink packages, modules, services, scripts, or helpers
+      remain in the image.
 - [x] Steam, 32/64-bit MangoHud, controller rules, and `lsfg-vk` are present.
 - [x] `modprobe -c` reports `options hid_apple fnmode=2`, and the image
       initramfs contains the setting.
 Verified locally on 2026-08-25 against image
 `sha256:71fedc25c0c0fa5058770aef2575fbca2535688200562bffed17d556b0e24362`.
-The artifact uses kernel `7.1.10-200.fc44.x86_64`; EVDI reports the same
-`vermagic`. `dnf check` also completed successfully. This records only static
-artifact verification, not approval to install or rebase.
+The previous artifact used kernel `7.1.10-200.fc44.x86_64`; `dnf check` also
+completed successfully. Re-run this gate for the current change set before
+installation. Static artifact verification is not approval to install or
+rebase.
 
 ## Installation and rollback
 
@@ -37,7 +40,10 @@ artifact verification, not approval to install or rebase.
 - [ ] Wi-Fi, Ethernet, Bluetooth, audio, camera, keyboard, and touchpad work.
 - [ ] Suspend/resume succeeds ten consecutive times, including an overnight
       suspend where practical.
-- [ ] Firefox and Brave launch; required system Flatpaks reconcile successfully.
+- [ ] Boot offline, observe a failed Flatpak reconciliation, connect Wi-Fi, and
+      verify all required Flatpaks install without rebooting.
+- [ ] Firefox, Brave, Bitwarden, Warehouse, and LocalSend launch.
+- [ ] A new user starts in Zsh with working Zim and `~/dev`, `~/sync`, and `~/ai`.
 - [ ] Zsh/Zim setup preserves pre-existing dotfiles on a rerun.
 - [ ] Distrobox can create, enter, update, and remove a disposable test box.
 - [ ] No AI MAX TTM/GTT arguments appear on Ryzen 6550U or Intel systems.
@@ -66,17 +72,10 @@ artifact verification, not approval to install or rebase.
 - [ ] Pair and test an Xbox controller over Bluetooth.
 - [ ] Test a Steam Controller when hardware becomes available.
 
-## DisplayLink dock on the Ryzen AI MAX host
-
-- [ ] Secure Boot is disabled for the current unsigned EVDI prototype.
-- [ ] Enable the DisplayLink profile and verify EVDI loads with no version error.
-- [ ] All three monitors work at the expected resolutions and refresh rates.
-- [ ] Test cold boot, warm reboot, dock hotplug, logout/login, and display sleep.
-- [ ] Suspend/resume succeeds repeatedly with the dock attached.
-- [ ] Repeat with IOMMU enabled and confirm XDNA and Wi-Fi initialize normally.
-
 ## Audio and microphone
 
+- [ ] `ujust hyperx-mic status` reports disabled before explicit opt-in.
+- [ ] `ujust hyperx-mic enable` enables the per-user path unit and is safe to rerun.
 - [ ] HyperX playback and capture appear after receiver reconnect and resume.
 - [ ] The microphone starts at 90%.
 - [ ] Vesktop cannot lower the source volume during calls or device changes.
@@ -85,6 +84,8 @@ artifact verification, not approval to install or rebase.
 ## Virtualization and optional profiles
 
 - [ ] virt-manager connects to `qemu:///system` as the non-root user.
+- [ ] The Arch ISO in `~/Downloads` reaches its boot menu with KVM, UEFI, and
+      the default NAT network.
 - [ ] Create a UEFI VM, a TPM-backed VM, and a NAT-connected VM.
 - [ ] VM shutdown and host suspend/resume do not leave stale libvirt state.
 - [ ] Labeled-drive automount mounts `gamedrive` under `/run/media/system` only
@@ -94,6 +95,8 @@ artifact verification, not approval to install or rebase.
       installed.
 - [ ] SSH and Wake-on-LAN remain disabled until explicitly enabled, then pass a
       same-LAN test and can be disabled again.
+- [ ] LACT connects to `lactd`; input-remapper lists devices and answers its
+      control handshake; both services survive reboot.
 
 ## Evidence to collect on failure
 

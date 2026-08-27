@@ -13,6 +13,7 @@ configurations:
       - io.github.kolunmi.Bazaar
 
       # Productivity and communication
+      - com.bitwarden.desktop
       - org.onlyoffice.desktopeditors
       - md.obsidian.Obsidian
       - dev.zed.Zed
@@ -37,6 +38,8 @@ configurations:
 
       # System utilities and virtualization
       - org.virt_manager.virt-manager
+      - io.github.flattool.Warehouse
+      - org.localsend.localsend_app
       - com.github.tchx84.Flatseal
       - net.nokyan.Resources
       - io.github.dimtpap.coppwr

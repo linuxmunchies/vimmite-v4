@@ -1,19 +1,19 @@
-# Vimmora's conservative Zim baseline. This file is copied to ~/.zimrc only if
-# the user does not already have one.
-zmodule environment
-zmodule git
-zmodule input
-zmodule termtitle
-zmodule utility
+# Vimmora's conservative, image-baked Zim baseline.
+zstyle ':zim:zmodule' use 'degit'
 
-zmodule duration-info
-zmodule git-info
-zmodule prompt-pwd
-zmodule asciiship
+zmodule environment --branch d4bceaa3da89cd819843334dba1a5bf7dc137e14
+zmodule git --branch 7d38eb4d9e595241bbbcdd62f836d1ee668317fc
+zmodule input --branch bdec2b372f8bd16a072d30ebc447a22dad52cfb4
+zmodule termtitle --branch b0de7783181804d21cc73fbb109fb89e8b021327
+zmodule utility --branch e1d1c23f578420e285cbea41dbd5cef75b35ca5b
 
-zmodule zsh-users/zsh-completions --fpath src
-zmodule completion
-zmodule zsh-users/zsh-syntax-highlighting
-zmodule zsh-users/zsh-history-substring-search
-zmodule zsh-users/zsh-autosuggestions
+zmodule duration-info --branch c887236aa21e2b070e128d2182c9576972697ba0
+zmodule git-info --branch 7146812f56185fc0ac614def3cfb71b6e7bbacbd
+zmodule prompt-pwd --branch ae51c93d4dcf7a2cceae97f2478727cc117988a9
+zmodule asciiship --branch 56c0a723b8b0d035dae78234f45997b6baa22d35
 
+zmodule zsh-users/zsh-completions --branch 8cd3bd78e8b1f17271cfdd8269074e5557d8d7b8 --fpath src
+zmodule completion --branch 8d3e0f4e6272f4d3bad659eaa13929f9dd96f123
+zmodule zsh-users/zsh-syntax-highlighting --branch 2fc57d63067c18b1100ecdbf684fa5baf49459d1
+zmodule zsh-users/zsh-history-substring-search --branch 14c8d2e0ffaee98f2df9850b19944f32546fdea5
+zmodule zsh-users/zsh-autosuggestions --branch 85919cd1ffa7d2d5412f6d3fe437ebdbeeec4fc5

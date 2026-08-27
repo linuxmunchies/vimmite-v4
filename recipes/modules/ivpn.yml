@@ -1,0 +1,20 @@
+---
+# yaml-language-server: $schema=https://schema.blue-build.org/module-list-v1.json
+
+modules:
+  - type: dnf
+    repos:
+      cleanup: true
+      files:
+        - https://repo.ivpn.net/stable/fedora/generic/ivpn.repo
+    install:
+      packages:
+        # IVPN's current Fedora 42+ instructions require the legacy backend.
+        # ivpn-ui depends on the daemon/CLI package.
+        - iptables-legacy
+        - ivpn-ui
+
+  - type: systemd
+    system:
+      enabled:
+        - ivpn-service.service

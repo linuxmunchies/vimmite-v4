@@ -5,4 +5,3 @@ After=pipewire.service wireplumber.service
 [Service]
 Type=oneshot
 ExecStart=/usr/libexec/vimmora-set-hyperx-mic-volume
-

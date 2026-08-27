@@ -1,6 +1,6 @@
 set shell := ["bash", "-euo", "pipefail", "-c"]
 
-[doc('Install Zim without overwriting existing shell configuration')]
+[doc('Install the image-baked Zim setup without overwriting shell configuration')]
 [group('Vimmora')]
 setup-zsh set_login_shell="false":
     #!/usr/bin/env bash
@@ -9,6 +9,13 @@ setup-zsh set_login_shell="false":
     user_name="$(id -un)"
     user_home="$(getent passwd "${user_name}" | cut -d: -f6)"
     template_dir="/usr/share/vimmora/zim"
+
+    if [[ ! -d "${user_home}/.zim" ]]; then
+        cp -a "${template_dir}/skel/.zim" "${user_home}/.zim"
+        echo "Installed the image-baked Zim modules in ${user_home}/.zim"
+    else
+        echo "Keeping existing ${user_home}/.zim"
+    fi
 
     if [[ ! -e "${user_home}/.zimrc" ]]; then
         install -m 0644 "${template_dir}/zimrc" "${user_home}/.zimrc"
@@ -26,7 +33,7 @@ setup-zsh set_login_shell="false":
 
     ZIM_HOME="${user_home}/.zim" \
     ZIM_CONFIG_FILE="${user_home}/.zimrc" \
-        zsh -c 'source /usr/share/vimmora/zim/zimfw.zsh install'
+        zsh -c 'source /usr/share/vimmora/zim/zimfw.zsh init'
 
     if [[ "{{ set_login_shell }}" == "true" ]]; then
         sudo usermod --shell /usr/bin/zsh "${user_name}"
@@ -35,41 +42,12 @@ setup-zsh set_login_shell="false":
         echo "Zim is ready. Run 'ujust setup-zsh true' to also select Zsh as the login shell."
     fi
 
-[doc('Enable, disable, or inspect DisplayLink for the next boot')]
-[group('Vimmora')]
-displaylink action="status":
-    #!/usr/bin/env bash
-    set -euo pipefail
-
-    case "{{ action }}" in
-        enable)
-            sudo systemctl enable displaylink.service
-            echo "DisplayLink will start on the next boot. Reboot with the dock attached."
-            ;;
-        disable)
-            sudo systemctl disable displaylink.service
-            echo "DisplayLink will remain stopped after the next boot."
-            ;;
-        status)
-            rpm -q displaylink libevdi
-            modinfo -F filename evdi
-            modinfo -F signer evdi
-            systemctl is-enabled displaylink.service || true
-            systemctl is-active displaylink.service || true
-            ;;
-        *)
-            echo "Usage: ujust displaylink [status|enable|disable]" >&2
-            exit 2
-            ;;
-    esac
-
-[doc('Prepare the current user and default network for system virtualization')]
+[doc('Prepare the default network and verify system virtualization')]
 [group('Vimmora')]
 setup-virtualization:
     #!/usr/bin/env bash
     set -euo pipefail
 
-    user_name="$(id -un)"
     sockets=(
         virtqemud.socket
         virtnetworkd.socket
@@ -80,7 +58,13 @@ setup-virtualization:
     )
 
     sudo systemctl enable --now "${sockets[@]}"
-    sudo usermod --append --groups libvirt "${user_name}"
+
+    # The installer creates private home directories (0700). Grant only the
+    # qemu service account directory traversal so libvirt can open ISO images
+    # selected from ~/Downloads; this does not permit listing the home folder.
+    if getent passwd qemu >/dev/null; then
+        sudo setfacl --modify u:qemu:--x "${HOME}"
+    fi
 
     if sudo virsh net-info default >/dev/null 2>&1; then
         sudo virsh net-autostart default
@@ -92,8 +76,8 @@ setup-virtualization:
         exit 1
     fi
 
-    sudo virsh uri
-    echo "Virtualization is ready. Log out and back in before opening virt-manager."
+    virsh --connect qemu:///system uri
+    echo "Virtualization is ready for this administrator account."
 
 [doc('Opt into automatic mounting of labeled internal Btrfs and ext4 drives')]
 [group('Vimmora')]
@@ -117,6 +101,33 @@ automount action="status":
             ;;
         *)
             echo "Usage: ujust automount [status|enable|disable]" >&2
+            exit 2
+            ;;
+    esac
+
+[doc('Opt into the HyperX Cloud Alpha Wireless microphone-volume helper')]
+[group('Vimmora')]
+hyperx-mic action="status":
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    unit="vimmora-hyperx-mic-volume.path"
+    case "{{ action }}" in
+        enable)
+            echo "This enables a user path unit that sets a detected HyperX Cloud Alpha Wireless microphone to 90%."
+            systemctl --user enable --now "${unit}"
+            echo "HyperX microphone handling is enabled for this user."
+            ;;
+        disable)
+            systemctl --user disable --now "${unit}"
+            echo "HyperX microphone handling is disabled for this user."
+            ;;
+        status)
+            systemctl --user is-enabled "${unit}" || true
+            systemctl --user is-active "${unit}" || true
+            ;;
+        *)
+            echo "Usage: ujust hyperx-mic [status|enable|disable]" >&2
             exit 2
             ;;
     esac

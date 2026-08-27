@@ -1,0 +1,11 @@
+// Fedora's stock rule grants passwordless libvirt management to members of
+// the libvirt group. Fresh desktop administrators are already in wheel, so
+// authorize wheel administrators without a separate logout/group step. This
+// also permits headless administration over SSH, matching the stock rule's
+// treatment of members of the dedicated libvirt group.
+polkit.addRule(function(action, subject) {
+    if (action.id == "org.libvirt.unix.manage" &&
+        subject.isInGroup("wheel")) {
+        return polkit.Result.YES;
+    }
+});

@@ -7,4 +7,3 @@ Unit=vimmora-hyperx-mic-volume.service
 
 [Install]
 WantedBy=default.target
-

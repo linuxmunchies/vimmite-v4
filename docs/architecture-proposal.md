@@ -24,8 +24,6 @@ pull requests. Routine rebuilds can still pick up refreshed Fedora 44 content.
   Bazzite consume it. That is stronger maintenance evidence than a base that is
   merely published but not widely exercised.
 - The standard kernel reduces the OGC-specific suspend and portability surface.
-  DisplayLink remains possible by compiling Negativo17's Fedora EVDI akmod for
-  the exact image kernel during composition.
 - The base already solves the low-value but failure-prone desktop integration
   work: complete multimedia codecs, AMD and Intel graphics userspace,
   thumbnails, Flathub, Distrobox, update services, and common device rules.
@@ -76,36 +74,7 @@ conceptual boundaries first; exact file names can be chosen during the rewrite.
 - Remove the standalone `nvidia-gpu-firmware` package after a build-time
   dependency check confirms it remains unneeded.
 
-### 2. Required DisplayLink capability
-
-The current system has all three parts of a DisplayLink stack:
-
-- Synaptics' proprietary `DisplayLinkManager` userspace from the `displaylink`
-  RPM;
-- `libevdi`;
-- an `evdi` module built and signed for the exact current kernel.
-
-The third display cannot be treated as ordinary Thunderbolt/USB-C display
-output. The implemented development design:
-
-1. installs Fedora's kernel-devel and Negativo17's `akmod-evdi` only while the
-   image is being built;
-2. compiles and verifies an EVDI RPM against the exact image kernel, then removes
-   the source akmod and build dependencies;
-3. installs the matching `displaylink`/`libevdi` userspace packages and ships the
-   driver in the common image;
-4. keeps `displaylink.service` disabled by default so machines without the dock
-   do not load `evdi` or run a proprietary daemon unnecessarily; and
-5. enables the service through a documented per-machine post-install command on
-   the dock host.
-
-The image build fails if the compiled module does not match the base kernel.
-The resulting module is currently unsigned, so the development image requires
-Secure Boot to remain disabled until a deliberate signing/enrollment design is
-implemented. This is a release blocker for Secure Boot targets, not a hidden
-assumption.
-
-### 3. Gaming baseline
+### 2. Gaming baseline
 
 Recommended host packages:
 
@@ -147,7 +116,7 @@ Sources:
 - [Fedora MangoHud](https://packages.fedoraproject.org/pkgs/mangohud/mangohud/)
 - [`lsfg-vk` installation guide](https://github.com/PancakeTAS/lsfg-vk/wiki/Installation-Guide)
 
-### 4. Virtualization baseline
+### 3. Virtualization baseline
 
 Keep the virt-manager Flatpak as the GUI; its current sandbox already has access
 to `/run/libvirt` and the per-user libvirt runtime directory. Add an actual host
@@ -164,18 +133,24 @@ backend to the image:
 Use Fedora/libvirt's modular socket-activated daemons rather than copying
 Bazzite's one-shot legacy `libvirtd.service` workaround. Enable the required
 QEMU, network, storage, secret, and node-device sockets declaratively. A
-post-install command can add the invoking user to `libvirt`, start the default
-NAT network if desired, and run a small connection/VM-capability test.
+polkit rule authorizes administrators in `wheel`. A post-install
+command starts the default NAT network if desired and runs a small
+connection/VM-capability test.
+
+Materialize `/var/lib/swtpm-localca` through tmpfiles with the ownership and
+mode declared by the Fedora `swtpm-tools` RPM; immutable deployments do not
+otherwise guarantee that package-owned mutable directory exists.
 
 Sources:
 
 - [libvirt modular daemons](https://libvirt.org/daemons.html)
 - [`virtqemud` manual](https://www.libvirt.org/manpages/virtqemud.html)
 
-### 5. Applications and developer environment
+### 4. Applications and developer environment
 
 - Keep the current declared Flatpaks.
-- Add Brave, ProtonPlus, Bazaar, and virt-manager to the declared Flatpak set.
+- Add Brave, ProtonPlus, Bazaar, virt-manager, Bitwarden, Warehouse, and
+  LocalSend to the declared Flatpak set.
 - Keep Lutris and Heroic out of the image; Bazaar can install them later.
 - Keep Zed as a Flatpak.
 - Keep Vim, Neovim, Git, Zsh, and the selected terminal utilities on the host.
@@ -188,11 +163,12 @@ the declared list at boot, so removals from that list must be intentional. The
 system reconciliation service retries transient first-boot failures because the
 network-online target can be reached before DNS is usable.
 
-### 6. Shell design
+### 5. Shell design
 
-Install Zsh in every image and provide an idempotent `ujust setup-zsh` command
-that installs Zim in the invoking user's home from a pinned version. It must not
-overwrite an existing `.zshrc` without explicit confirmation.
+Install Zsh in every image, resolve Zim modules at image-build time, seed new
+accounts through `/etc/skel`, and make Zsh the account-tool default. The
+idempotent `ujust setup-zsh` repair/upgrade path must not overwrite an existing
+`.zshrc` without explicit confirmation.
 
 Universal Blue removes `chsh` deliberately because rolling back to an image
 without the selected shell can make login fail. Vimmite3 should not silently
@@ -201,15 +177,16 @@ Zsh (safest) or, after warning about the rollback constraint, use `usermod` to
 make the image-baked `/usr/bin/zsh` the login shell. The latter is appropriate
 only while every retained deployment includes Zsh.
 
-### 7. Fonts and copied configuration
+### 6. Fonts and copied configuration
 
 - Install Fira Code and JetBrains Mono Nerd Fonts from pinned artifacts with
   checksums. BlueBuild's convenience font module always fetches the latest
   release, so it is not the reproducible choice here.
 - Keep the corrected Vesktop microphone-volume block in the image after the
   live test remains stable.
-- Keep the HyperX source at 90% through a user-session rule/service that selects
-  the device by stable properties rather than a transient PipeWire object ID.
+- Offer an opt-in HyperX user-session rule/service that keeps the source at 90%
+  and selects the device by stable properties rather than a transient PipeWire
+  object ID.
 - Retain `hid_apple fnmode=2` for the EPOMAKER EA75 and regenerate the image
   initramfs so the option applies even if the driver loads during early boot.
 - Do not copy the old global low-latency PipeWire quantum until its benefit and
@@ -223,9 +200,9 @@ than guessing hardware at image-build time.
 | Profile | Intended behavior |
 | --- | --- |
 | `setup-zsh` | Install pinned Zim user state and select the requested shell behavior. |
-| `displaylink` | Enable or disable DisplayLink on the dock host and report the exact `evdi` module state. |
 | `setup-ai-max` | On the exact GMKtec AI MAX host only, opt into or undo the former large-memory values while removing `iommu=off`; clearly warn that `amdgpu.gttsize` is deprecated. |
 | `automount` | Opt into Universal Blue's labeled internal Btrfs/ext4 drive automount service; disabled elsewhere. |
+| `hyperx-mic` | Opt into the HyperX Cloud Alpha Wireless 90% microphone helper for the current user. |
 | `setup-virtualization` | Prepare libvirt user access, default network, storage paths, and a backend test. |
 | `install-streaming` | Install Moonlight, Sunshine, or both as user Flatpaks and run Sunshine's required host integration. |
 | `ssh-server` | Enable or disable OpenSSH together with its firewalld service. |
@@ -251,18 +228,13 @@ Source: [rpm-ostree administrator handbook](https://coreos.github.io/rpm-ostree/
 
 1. Build the proposed Fedora 44 image in CI with no Nvidia-specific packages or
    repositories and inspect its package manifest.
-2. Verify the `evdi` module version exactly matches the image kernel. Keep
-   Secure Boot disabled during this unsigned prototype and track signing as a
-   separate release gate.
-3. Boot a temporary deployment on the Ryzen AI MAX host without applying any
+2. Boot a temporary deployment on the Ryzen AI MAX host without applying any
    shared kernel arguments.
-4. Test the HP dock at three displays, including disconnect/reconnect, reboot,
-   suspend/resume, and login/logout.
-5. Test native Steam, MangoHud, ProtonPlus, Bottles, the game drive,
+3. Test native Steam, MangoHud, ProtonPlus, Bottles, the game drive,
    and the DualShock-compatible receiver before adding optional gaming pieces.
-6. Test virt-manager against `qemu:///system`, a UEFI VM, a TPM-backed VM, NAT,
+4. Test virt-manager against `qemu:///system`, a UEFI VM, a TPM-backed VM, NAT,
    shutdown, and resume.
-7. Repeat a reduced hardware suite on the Ryzen 6550U/Radeon 660M and Intel
+5. Repeat a reduced hardware suite on the Ryzen 6550U/Radeon 660M and Intel
    Core Ultra/Arc systems.
-8. Build and test the installer, including the reported post-install grey-screen
+6. Build and test the installer, including the reported post-install grey-screen
    case and the first reboot, before declaring the old installer replaced.

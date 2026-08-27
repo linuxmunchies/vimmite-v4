@@ -2,15 +2,16 @@
 # yaml-language-server: $schema=https://schema.blue-build.org/module-list-v1.json
 
 modules:
-  # UBlue's main-kernel akmods image currently omits the "extra" EVDI group.
-  # Build EVDI from Negativo17's akmod against the exact image kernel instead.
-  - type: script
-    scripts:
-      - build-evdi.sh
-
   - type: dnf
+    repos:
+      cleanup: true
+      copr:
+        - ilyaz/LACT
     install:
       packages:
+        # LACT's native package includes both its GUI and privileged daemon.
+        - lact
+        - input-remapper
         - steam-devices
         - mesa-vulkan-drivers.i686
     remove:
@@ -18,6 +19,12 @@ modules:
         # The target fleet is AMD/Intel only. Generic upstream kernel modules
         # remain part of Fedora's standard kernel.
         - nvidia-gpu-firmware
+
+  - type: systemd
+    system:
+      enabled:
+        - lactd.service
+        - input-remapper.service
 
   # Preserve Bazzite's useful labeled-drive automount behavior without making
   # it active on every target. The matching ujust command opts a machine in.

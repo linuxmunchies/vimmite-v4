@@ -1,5 +1,5 @@
-# Vimmora Zim bootstrap. This file is copied to ~/.zshrc only if the user does
-# not already have one.
+# Vimmora Zim bootstrap. The initial module tree is baked into the image, so a
+# first login does not require network access.
 setopt HIST_IGNORE_ALL_DUPS
 bindkey -e
 WORDCHARS=${WORDCHARS//[\/]}
@@ -14,4 +14,3 @@ if [[ ! ${ZIM_HOME}/init.zsh -nt ${ZIM_CONFIG_FILE} ]]; then
 fi
 
 source ${ZIM_HOME}/init.zsh
-
