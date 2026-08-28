@@ -220,7 +220,7 @@ rerun, and provide a matching status or undo path where practical.
   reason to customize it.
 - Do not claim that an OS deployment rollback restores `/var` or home data; it
   does not. Personal-data backup/snapshot tooling remains a separate decision.
-- Do not port Vimmora's mutable-root Snapper setup into the image.
+- Do not port Vimmite's mutable-root Snapper setup into the image.
 
 Source: [rpm-ostree administrator handbook](https://coreos.github.io/rpm-ostree/administrator-handbook/)
 

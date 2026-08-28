@@ -38,7 +38,7 @@ observations separately from decisions and keeps unresolved design work visible.
 
 ## Current repository observations
 
-- `recipes/vimmora.yml` now inherits `ghcr.io/ublue-os/kinoite-main:44`; it is
+- `recipes/vimmite.yml` now inherits `ghcr.io/ublue-os/kinoite-main:44`; it is
   the sole supported Vimmite V4 image recipe.
 - The replacement is split into explicit hardware, host package, gaming,
   virtualization, configuration, Flatpak, and signing modules.
@@ -176,5 +176,5 @@ investigation scope.
 - Decide on a personal-data backup policy separately from atomic deployment
   rollback.
 
-The initial Vimmora classification is maintained in
-[Vimmora migration inventory](vimmora-migration.md).
+The initial Vimmite classification is maintained in
+[Vimmite migration inventory](vimmite-migration.md).

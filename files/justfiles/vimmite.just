@@ -1,14 +1,14 @@
 set shell := ["bash", "-euo", "pipefail", "-c"]
 
 [doc('Install the image-baked Zim setup without overwriting shell configuration')]
-[group('Vimmora')]
+[group('Vimmite')]
 setup-zsh set_login_shell="false":
     #!/usr/bin/env bash
     set -euo pipefail
 
     user_name="$(id -un)"
     user_home="$(getent passwd "${user_name}" | cut -d: -f6)"
-    template_dir="/usr/share/vimmora/zim"
+    template_dir="/usr/share/vimmite/zim"
 
     if [[ ! -d "${user_home}/.zim" ]]; then
         cp -a "${template_dir}/skel/.zim" "${user_home}/.zim"
@@ -33,7 +33,7 @@ setup-zsh set_login_shell="false":
 
     ZIM_HOME="${user_home}/.zim" \
     ZIM_CONFIG_FILE="${user_home}/.zimrc" \
-        zsh -c 'source /usr/share/vimmora/zim/zimfw.zsh init'
+        zsh -c 'source /usr/share/vimmite/zim/zimfw.zsh init'
 
     if [[ "{{ set_login_shell }}" == "true" ]]; then
         sudo usermod --shell /usr/bin/zsh "${user_name}"
@@ -43,7 +43,7 @@ setup-zsh set_login_shell="false":
     fi
 
 [doc('Prepare the default network and verify system virtualization')]
-[group('Vimmora')]
+[group('Vimmite')]
 setup-virtualization:
     #!/usr/bin/env bash
     set -euo pipefail
@@ -80,7 +80,7 @@ setup-virtualization:
     echo "Virtualization is ready for this administrator account."
 
 [doc('Opt into automatic mounting of labeled internal Btrfs and ext4 drives')]
-[group('Vimmora')]
+[group('Vimmite')]
 automount action="status":
     #!/usr/bin/env bash
     set -euo pipefail
@@ -106,12 +106,12 @@ automount action="status":
     esac
 
 [doc('Opt into the HyperX Cloud Alpha Wireless microphone-volume helper')]
-[group('Vimmora')]
+[group('Vimmite')]
 hyperx-mic action="status":
     #!/usr/bin/env bash
     set -euo pipefail
 
-    unit="vimmora-hyperx-mic-volume.path"
+    unit="vimmite-hyperx-mic-volume.path"
     case "{{ action }}" in
         enable)
             echo "This enables a user path unit that sets a detected HyperX Cloud Alpha Wireless microphone to 90%."
@@ -133,7 +133,7 @@ hyperx-mic action="status":
     esac
 
 [doc('Install Moonlight, Sunshine, or both as optional user Flatpaks')]
-[group('Vimmora')]
+[group('Vimmite')]
 install-streaming component="moonlight":
     #!/usr/bin/env bash
     set -euo pipefail
@@ -166,7 +166,7 @@ install-streaming component="moonlight":
     esac
 
 [doc('Enable, disable, or inspect the OpenSSH server and firewall rule')]
-[group('Vimmora')]
+[group('Vimmite')]
 ssh-server action="status":
     #!/usr/bin/env bash
     set -euo pipefail
@@ -197,7 +197,7 @@ ssh-server action="status":
     esac
 
 [doc('Configure magic-packet Wake-on-LAN for a NetworkManager Ethernet connection')]
-[group('Vimmora')]
+[group('Vimmite')]
 wake-on-lan interface="" action="status":
     #!/usr/bin/env bash
     set -euo pipefail
@@ -244,7 +244,7 @@ wake-on-lan interface="" action="status":
     esac
 
 [doc('Manage the legacy large-memory profile only on the GMKtec Ryzen AI MAX+ 395 host')]
-[group('Vimmora')]
+[group('Vimmite')]
 setup-ai-max action="status":
     #!/usr/bin/env bash
     set -euo pipefail

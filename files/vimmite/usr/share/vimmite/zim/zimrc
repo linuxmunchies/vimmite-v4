@@ -1,4 +1,4 @@
-# Vimmora's conservative, image-baked Zim baseline.
+# Vimmite's conservative, image-baked Zim baseline.
 zstyle ':zim:zmodule' use 'degit'
 
 zmodule environment --branch d4bceaa3da89cd819843334dba1a5bf7dc137e14

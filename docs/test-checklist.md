@@ -5,8 +5,8 @@ date for every run. Do not promote a build until the blocking checks pass.
 
 ## Build artifact gate
 
-- [x] `bluebuild validate recipes/vimmora.yml` passes.
-- [x] A clean `bluebuild build --no-sign recipes/vimmora.yml` passes.
+- [x] `bluebuild validate recipes/vimmite.yml` passes.
+- [x] A clean `bluebuild build --no-sign recipes/vimmite.yml` passes.
 - [x] The image uses `ghcr.io/ublue-os/kinoite-main:44` and Fedora's standard
       kernel, not an OGC/Bazzite kernel.
 - [x] Firefox is present; Gamescope and NVIDIA-specific packages are absent.

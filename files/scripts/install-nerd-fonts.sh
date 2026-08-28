@@ -2,9 +2,9 @@
 set -euo pipefail
 
 readonly NERD_FONTS_VERSION="3.5.1"
-readonly FONT_ROOT="/usr/share/fonts/vimmora/nerd-fonts"
+readonly FONT_ROOT="/usr/share/fonts/vimmite/nerd-fonts"
 
-fonts_workdir="$(mktemp -d /tmp/vimmora-fonts.XXXXXX)"
+fonts_workdir="$(mktemp -d /tmp/vimmite-fonts.XXXXXX)"
 trap 'rm -rf "${fonts_workdir}"' EXIT
 
 install_font() {

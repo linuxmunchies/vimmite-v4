@@ -1,4 +1,4 @@
-# Vimmora Zim bootstrap. The initial module tree is baked into the image, so a
+# Vimmite Zim bootstrap. The initial module tree is baked into the image, so a
 # first login does not require network access.
 setopt HIST_IGNORE_ALL_DUPS
 bindkey -e
@@ -10,7 +10,7 @@ ZIM_HOME=${ZDOTDIR:-${HOME}}/.zim
 ZIM_CONFIG_FILE=${ZDOTDIR:-${HOME}}/.zimrc
 
 if [[ ! ${ZIM_HOME}/init.zsh -nt ${ZIM_CONFIG_FILE} ]]; then
-  source /usr/share/vimmora/zim/zimfw.zsh init
+  source /usr/share/vimmite/zim/zimfw.zsh init
 fi
 
 source ${ZIM_HOME}/init.zsh

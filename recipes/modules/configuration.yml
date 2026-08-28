@@ -4,7 +4,7 @@
 modules:
   - type: files
     files:
-      - source: vimmora
+      - source: vimmite
         destination: /
 
   - type: script
@@ -14,3 +14,9 @@ modules:
 
   - type: justfiles
 
+  # The Brew module installs Homebrew itself; this service declaratively
+  # reconciles the small list of image-managed formulae after that setup.
+  - type: systemd
+    system:
+      enabled:
+        - vimmite-brew-packages.service

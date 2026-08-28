@@ -1,0 +1,20 @@
+[Unit]
+Description=Install Vimmite-managed Homebrew formulae
+Wants=network-online.target
+After=brew-setup.service network-online.target
+ConditionPathIsSymbolicLink=/home/linuxbrew/.linuxbrew/bin/brew
+StartLimitIntervalSec=0
+
+[Service]
+Type=oneshot
+User=1000
+Environment=HOMEBREW_CELLAR=/home/linuxbrew/.linuxbrew/Cellar
+Environment=HOMEBREW_PREFIX=/home/linuxbrew/.linuxbrew
+Environment=HOMEBREW_REPOSITORY=/home/linuxbrew/.linuxbrew/Homebrew
+Environment=HOMEBREW_NO_AUTO_UPDATE=1
+ExecStart=/usr/libexec/vimmite-brew-packages
+Restart=on-failure
+RestartSec=2min
+
+[Install]
+WantedBy=multi-user.target

@@ -1,6 +1,6 @@
-# Vimmora migration inventory
+# Vimmite migration inventory
 
-This is a provisional classification of the active Vimmora scripts and its
+This is a provisional classification of the active Vimmite scripts and its
 archived monolith. It preserves their intent without treating the old installer
 as a specification. Items that depend on the replacement base or current
 upstream guidance remain open until those sources are verified.
@@ -14,7 +14,7 @@ upstream guidance remain open until those sources are verified.
 | `02-media-and-drivers.sh` | Multimedia packages, AMD/Intel acceleration, and fonts |
 | `03-gaming.sh` | Steam stack, gaming tuning, and a fixed game-drive mount |
 | `04-user-environment.sh` | Flatpaks, Brave, Zsh, fonts, keyboard, audio, and user directories |
-| `Archives/Vimmora_V5_old.sh` | Earlier ROCm, Kickstart Neovim, application, and directory ideas |
+| `Archives/Vimmite_V5_old.sh` | Earlier ROCm, Kickstart Neovim, application, and directory ideas |
 
 The active scripts contain no explicit Proton installation, Gamescope,
 emulation stack, controller driver, Distrobox setup, Wake-on-LAN setup, or SSH
@@ -32,7 +32,7 @@ These are confirmed requirements. Their old implementation is not approved.
   libvirt networking, and appropriate socket activation.
 - Distrobox as the preferred home for Python, Go, and Rust development stacks.
 - Neovim on the host and Zed as a Flatpak.
-- Zsh as the preferred interactive shell, using Zim rather than Vimmora's
+- Zsh as the preferred interactive shell, using Zim rather than Vimmite's
   generated `zsh-kick` configuration.
 - Firefox as a guaranteed browser and Brave delivered as a Flatpak.
 - The declared Vimmite V4 GUI application set on every machine.
@@ -66,7 +66,7 @@ These appear useful but need pruning against the base image and actual use.
   replaced by rebuilding and deploying a signed image.
 - Brave's third-party RPM repository is replaced by its Flatpak.
 - Language compiler stacks move from the host into Distrobox.
-- Vimmora's generated Zsh configuration is replaced by a deliberate Zim
+- Vimmite's generated Zsh configuration is replaced by a deliberate Zim
   bootstrap/configuration design.
 - Service enablement should use declarative image presets/modules rather than
   starting services during an image build.
@@ -86,7 +86,7 @@ These appear useful but need pruning against the base image and actual use.
   incompatible with Intel and multi-GPU portability.
 - The installed `xone` out-of-tree kernel module is unnecessary for the
   currently stated Bluetooth-only Xbox use unless a later test proves otherwise.
-- Hard-coding the hostname to `VimmoraV1` does not belong in a reusable image.
+- Hard-coding the hostname to `VimmiteV1` does not belong in a reusable image.
 - Mutating `/etc/fstab` around a drive label during a general installer does not
   belong in the portable image.
 - Mixing legacy `libvirtd.socket` with modular `virtqemud.socket` and
@@ -139,7 +139,7 @@ These appear useful but need pruning against the base image and actual use.
   OS rollback is already the atomic deployment model and should not be conflated
   with Btrfs data snapshots.
 - Whether Anki, Element, LibreWolf, Video Downloader, Strawberry, Spotify, or
-  KWallet Manager from older Vimmora revisions are still wanted.
+  KWallet Manager from older Vimmite revisions are still wanted.
 - Neovim configuration is intentionally deferred. Install Vim and Neovim but do
   not port or overwrite an editor configuration.
 - Whether the `bluetooth.disable_ertm=1` kernel argument is still needed for the
@@ -149,9 +149,9 @@ These appear useful but need pruning against the base image and actual use.
 
 ## Initial gap conclusion
 
-Vimmora was primarily a mutable Fedora workstation bootstrap, not the source of
+Vimmite was primarily a mutable Fedora workstation bootstrap, not the source of
 the current Bazzite experience. Its strongest migration candidates are intent:
 virtualization, Steam device permissions, multimedia, host utilities,
 fonts, shell ergonomics, and a handful of applications. The replacement gaming
 stack must be designed mainly from the observed Bazzite dependency inventory and
-current upstream sources, not reconstructed from Vimmora.
+current upstream sources, not reconstructed from Vimmite.

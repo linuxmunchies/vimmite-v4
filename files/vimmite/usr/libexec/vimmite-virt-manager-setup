@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# Flatpak's first-run hypervisor detection cannot see the host QEMU binaries.
+# Seed the working system libvirt URI, but never replace a user's connections.
+set -euo pipefail
+
+readonly app_id=org.virt_manager.virt-manager
+readonly schema=org.virt-manager.virt-manager.connections
+
+current_uris="$(/usr/bin/flatpak --system run --command=gsettings "$app_id" get "$schema" uris)"
+if [[ "$current_uris" != '@as []' ]]; then
+  echo "virt-manager connections already configured; preserving them."
+  exit 0
+fi
+
+/usr/bin/flatpak --system run --command=gsettings "$app_id" set "$schema" uris "['qemu:///system']"
+/usr/bin/flatpak --system run --command=gsettings "$app_id" set "$schema" autoconnect "['qemu:///system']"
+echo "Configured virt-manager to use the local QEMU/KVM connection."

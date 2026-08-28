@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# Install formulae that Vimmite manages. Add new formula names to this list.
+set -euo pipefail
+
+readonly brew_binary=/home/linuxbrew/.linuxbrew/bin/brew
+readonly formulae=(
+  btop
+)
+
+for formula in "${formulae[@]}"; do
+  if "$brew_binary" list --formula "$formula" >/dev/null 2>&1; then
+    echo "Homebrew formula already installed: $formula"
+    continue
+  fi
+
+  "$brew_binary" install "$formula"
+done

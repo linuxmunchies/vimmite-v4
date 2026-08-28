@@ -143,7 +143,7 @@ To build the image from this checkout before creating the installer:
 sudo bluebuild generate-iso \
   --output-dir ./iso \
   --iso-name Vimmite-V4-local.iso \
-  recipe recipes/vimmora.yml
+  recipe recipes/vimmite.yml
 ```
 
 This path takes longer and needs substantially more temporary storage because
@@ -260,21 +260,21 @@ network, graphics, audio, suspend/resume, and any machine-specific dock tests.
 ### Validate the recipe
 
 ```bash
-bluebuild validate recipes/vimmora.yml
+bluebuild validate recipes/vimmite.yml
 ```
 
 Preview the fully expanded recipe or generated Containerfile when debugging
 module ordering:
 
 ```bash
-bluebuild generate --display-full-recipe recipes/vimmora.yml
-bluebuild generate recipes/vimmora.yml --output Containerfile
+bluebuild generate --display-full-recipe recipes/vimmite.yml
+bluebuild generate recipes/vimmite.yml --output Containerfile
 ```
 
 ### Build without publishing
 
 ```bash
-bluebuild build --no-sign recipes/vimmora.yml
+bluebuild build --no-sign recipes/vimmite.yml
 ```
 
 The local build uses the checkout's modules and scripts, verifies pinned
@@ -318,17 +318,17 @@ gh run watch --repo linuxmunchies/vimmite-v4 <run-id> --exit-status
 ## Repository map
 
 ```text
-recipes/vimmora.yml              Primary Kinoite recipe
+recipes/vimmite.yml              Primary Kinoite recipe
 recipes/modules/                 Hardware, packages, gaming, virtualization,
                                  configuration, and Flatpak modules
 files/scripts/                   Pinned artifact and shell installers
-files/vimmora/                   Files copied into the primary image
-files/justfiles/vimmora.just     Vimmite V4 ujust commands
+files/vimmite/                   Files copied into the primary image
+files/justfiles/vimmite.just     Vimmite V4 ujust commands
 docs/post-install.md             Optional profile instructions
 docs/test-checklist.md           Physical acceptance checklist
 docs/architecture-proposal.md    Design and dependency rationale
 docs/investigation.md            Original live-system audit
-docs/vimmora-migration.md        Vimmora migration inventory
+docs/vimmite-migration.md        Vimmite migration inventory
 cosign.pub                       Public image-verification key
 ```
 
@@ -349,7 +349,7 @@ That is the point of Vimmite V4: **my desktop, my defaults, reproducibly built.*
 
 - [Investigation and decisions](docs/investigation.md)
 - [Architecture and dependency rationale](docs/architecture-proposal.md)
-- [Vimmora migration inventory](docs/vimmora-migration.md)
+- [Vimmite migration inventory](docs/vimmite-migration.md)
 - [Post-install profiles](docs/post-install.md)
 - [Physical acceptance checklist](docs/test-checklist.md)
 - [Session 1 implementation findings](docs/session-1-findings.md)

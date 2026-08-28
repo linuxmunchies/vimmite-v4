@@ -3,7 +3,7 @@ Description=Watch for the HyperX Cloud Alpha Wireless headset
 
 [Path]
 PathExistsGlob=/dev/snd/by-id/usb-HP__Inc_HyperX_Cloud_Alpha_Wireless_*
-Unit=vimmora-hyperx-mic-volume.service
+Unit=vimmite-hyperx-mic-volume.service
 
 [Install]
 WantedBy=default.target
