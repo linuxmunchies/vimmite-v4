@@ -58,8 +58,8 @@ applications later without expanding the base image.
 
 ### Workstation and development tools
 
-- Git, Vim, Neovim, Zsh, Zim, Kitty, Bat, `fd`, `jq`, `lsd`, `tldr`, and Nerd
-  Fonts
+- Git, Vim, Neovim, Zsh, Zim, Kitty, Bat, `btop`, `fd`, `jq`, `lsd`, `tldr`,
+  and Nerd Fonts
 - Podman, Distrobox, and Podman Compose
 - Zed from Flathub
 - QEMU/KVM, modular libvirt daemons, UEFI firmware, software TPM support, and
